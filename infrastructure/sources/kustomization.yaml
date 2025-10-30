@@ -4,4 +4,5 @@ namespace: cluster-config
 resources:
   - bitnami.yaml
   - ghcr.yaml
+  - nginx.yaml
   - podinfo.yaml
