@@ -12,7 +12,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: nginx
-        namespace: flux-system
+        namespace: cluster-config
       version: 2.3.1
   interval: 2m0s #1h0m0s
   install:
