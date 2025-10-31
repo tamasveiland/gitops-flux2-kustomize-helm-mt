@@ -10,10 +10,10 @@ spec:
 ---
 
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+kind: OCIRepository
 metadata:
   name: bitnami-oci
-  namespace: kube-system
+  namespace: flux-system
 spec:
   interval: "30m"
   type: oci

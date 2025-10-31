@@ -11,7 +11,7 @@ spec:
       chart: redis
       sourceRef:
         kind: HelmRepository
-        name: bitnami
+        name: bitnami-oci
         namespace: cluster-config
       version: "latest"
   interval: 1h0m0s
