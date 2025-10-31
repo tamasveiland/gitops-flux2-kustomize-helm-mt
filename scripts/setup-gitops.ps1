@@ -34,3 +34,34 @@ az k8s-configuration flux create -g $MY_RESOURCE_GROUP_NAME `
 --kustomization name=infra path=./infrastructure prune=true `
 --kustomization name=apps path=./apps/staging prune=true dependsOn=infra
 
+# Update
+az k8s-configuration flux update -g $MY_RESOURCE_GROUP_NAME `
+-c $MY_AKS_CLUSTER_NAME `
+-n cluster-config `
+-t managedClusters `
+-u https://github.com/tamasveiland/gitops-flux2-kustomize-helm-mt `
+--branch main  `
+--kustomization name=infra path=./infrastructure prune=true force=true `
+--kustomization name=apps path=./apps/staging prune=true force=true dependsOn=infra
+
+
+kubectl get fluxconfigs -A
+kubectl get gitrepositories -A
+kubectl get helmreleases -A
+kubectl get kustomizations -A
+
+# Configure log level
+az k8s-extension update --resource-group $MY_RESOURCE_GROUP_NAME `
+                        --cluster-name $MY_AKS_CLUSTER_NAME `
+                        --cluster-type managedClusters `
+                        --name flux `
+                        --config source-controller.log-level=error kustomize-controller.log-level=error
+
+# Enforce reconciliation
+az k8s-configuration flux reconcile kustomization infra --with-source --force
+
+flux get kustomizations
+flux get helmreleases
+flux reconcile kustomization <name> --with-source
+flux reconcile helmrelease <name> --namespace <namespace>
+flux reconcile kustomization cluster-config-infra --with-source --force --namespace cluster-config
