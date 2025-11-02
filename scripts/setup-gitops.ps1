@@ -62,6 +62,7 @@ az k8s-configuration flux reconcile kustomization infra --with-source --force
 
 flux get kustomizations
 flux get helmreleases
-flux reconcile kustomization <name> --with-source
-flux reconcile helmrelease <name> --namespace <namespace>
+# flux reconcile kustomization <name> --with-source
+# flux reconcile helmrelease <name> --namespace <namespace>
 flux reconcile kustomization cluster-config-infra --with-source --force --namespace cluster-config
+flux reconcile helmrelease redis --namespace cluster-config
