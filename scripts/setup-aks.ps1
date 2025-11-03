@@ -77,6 +77,15 @@ az aks update `
 #   --scope $ACR_ID
 
 
+# Enable OIDC and Workload Identity
+az aks update -g $MY_RESOURCE_GROUP_NAME -n $MY_AKS_CLUSTER_NAME --enable-oidc-issuer --enable-workload-identity
+# 
+$AKS_OIDC_ISSUER = az aks show -g "rg-aks-store-demo" -n "aks-store-demo01" --query "oidcIssuerProfile.issuerUrl" -o tsv
+az identity federated-credential create --name "flux-source-controller" --identity-name "id-aks-store-demo" --resource-group "rg-aks-store-demo" --issuer $AKS_OIDC_ISSUER --subject "system:serviceaccount:flux-system:source-controller" --audience "api://AzureADTokenExchange"
+$IDENTITY_CLIENT_ID = az identity show -g "rg-aks-store-demo" -n "id-aks-store-demo" --query "clientId" -o tsv
+# annotate the Flux source controller service account with the client ID of the managed identity
+kubectl annotate serviceaccount -n flux-system source-controller azure.workload.identity/client-id="$IDENTITY_CLIENT_ID"
+
 az aks get-credentials --resource-group $MY_RESOURCE_GROUP_NAME --name $MY_AKS_CLUSTER_NAME
 
 kubectl get nodes

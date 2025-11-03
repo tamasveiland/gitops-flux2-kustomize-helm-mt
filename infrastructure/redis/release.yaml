@@ -11,8 +11,8 @@ spec:
       chart: redis
       sourceRef:
         kind: HelmRepository
-        name: acr-oci
-        namespace: cluster-config
+        name: bitnami
+        namespace: flux-system
       version: "23.0.5"
   interval: 2m0s
   install:
