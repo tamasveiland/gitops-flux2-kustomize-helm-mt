@@ -7,3 +7,4 @@ spec:
   interval: "30m"
   type: oci
   url: oci://acrakstoredemo23c3e0.azurecr.io/helm
+
