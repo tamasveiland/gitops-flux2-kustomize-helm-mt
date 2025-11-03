@@ -4,6 +4,6 @@ metadata:
   name: acr-oci
   namespace: cluster-config
 spec:
-  interval: "30m"
+  interval: "1m"
   url: oci://acrakstoredemo23c3e0.azurecr.io/helm
 
