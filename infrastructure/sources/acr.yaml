@@ -6,4 +6,6 @@ metadata:
 spec:
   interval: "1m"
   url: oci://acrakstoredemo23c3e0.azurecr.io/helm
+  secretRef:
+    name: acr-secret
 
