@@ -11,4 +11,4 @@ helm package ./redis
 
 # Push helm chart to ACR
 # helm push redis-*.tgz oci://<your-acr-name>.azurecr.io
-helm push redis-23.0.4.tgz oci://acrakstoredemo23c3e0.azurecr.io/helm
+helm push redis-23.0.5.tgz oci://acrakstoredemo23c3e0.azurecr.io/helm
