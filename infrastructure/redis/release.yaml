@@ -10,7 +10,7 @@ spec:
     spec:
       chart: redis
       sourceRef:
-        kind: OCIRepository
+        kind: HelmRepository
         name: acr-oci
         namespace: cluster-config
       version: "23.0.5"
