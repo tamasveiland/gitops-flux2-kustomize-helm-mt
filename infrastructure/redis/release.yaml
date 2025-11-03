@@ -12,7 +12,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: acr-oci
-        namespace: flux-system
+        namespace: cluster-config
       version: "23.0.5"
   interval: 2m0s
   install:

@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: acr-oci
-  namespace: flux-system
+  namespace: cluster-config
 spec:
   interval: "30m"
   type: oci
