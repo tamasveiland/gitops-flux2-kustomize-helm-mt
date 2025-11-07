@@ -66,3 +66,22 @@ flux get helmreleases
 # flux reconcile helmrelease <name> --namespace <namespace>
 flux reconcile kustomization cluster-config-infra --with-source --force --namespace cluster-config
 flux reconcile helmrelease redis --namespace cluster-config
+
+# force a reconciliation of the HelmRepository
+kubectl annotate gitrepository cluster-config -n cluster-config --overwrite reconcile.fluxcd.io/requestedAt="$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ')"
+
+# force a reconciliation of the Kustomization
+kubectl patch kustomization cluster-config-infra -n cluster-config --type merge -p '{"spec":{"force":true}}'
+
+kubectl patch kustomization cluster-config-infra -n cluster-config --type merge -p '{"spec":{"force":true,"interval":"10s"}}'
+
+# Clean up old ACR secret (no longer needed with workload identity)
+kubectl delete secret acr-secret -n cluster-config --ignore-not-found=true
+
+# Force reconciliation of the HelmRepository to use workload identity
+kubectl annotate helmrepository acr-oci -n cluster-config --overwrite reconcile.fluxcd.io/requestedAt="$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ')"
+kubectl get helmrelease redis -n cluster-config
+
+# Verify workload identity configuration
+kubectl describe serviceaccount source-controller -n flux-system
+kubectl get helmrepository acr-oci -n cluster-config -o yaml
