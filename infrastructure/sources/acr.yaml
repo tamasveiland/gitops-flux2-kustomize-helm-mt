@@ -7,5 +7,8 @@ spec:
   interval: "1m"
   type: oci
   url: oci://acrakstoredemo23c3e0.azurecr.io/helm
+  secretRef:
+    name: acr-credentials
+  ######################################
   # Using workload identity - no secretRef needed
 
