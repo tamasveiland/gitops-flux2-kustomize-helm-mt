@@ -12,3 +12,8 @@ replica:
 
 volumePermissions:
   enabled: true
+
+# Enable skipping image verification (NOT RECOMMENDED for production)
+global:
+  security:
+    allowInsecureImages: true
