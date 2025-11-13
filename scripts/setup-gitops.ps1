@@ -112,7 +112,7 @@ $ACR_LOGIN_SERVER=$(az acr show -n $ACR_NAME -g $MY_RESOURCE_GROUP_NAME --query 
 $ns = "cluster-config"
 $secretName = "acr-credentials"
 $clientId = "ed20f3b1-51d6-47f8-840d-c609ab4c8c71"
-$clientSecret = "kdc8Q~lzKOrEwog-JE6f-K.keqwdW-SuTI0hybFZ"
+$clientSecret = ""
 
 kubectl create secret docker-registry $secretName `
   --docker-server=$ACR_LOGIN_SERVER `
