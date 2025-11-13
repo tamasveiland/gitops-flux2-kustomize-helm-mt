@@ -67,6 +67,15 @@ flux get helmreleases
 flux reconcile kustomization cluster-config-infra --with-source --force --namespace cluster-config
 flux reconcile helmrelease redis --namespace cluster-config
 
+# configure the workload identity for the Flux source controller. Let me apply the missing annotations and labels
+kubectl annotate serviceaccount -n flux-system source-controller azure.workload.identity/client-id="$IDENTITY_CLIENT_ID" --overwrite
+kubectl label serviceaccount -n flux-system source-controller azure.workload.identity/use=true --overwrite
+# Check federated credential
+az identity federated-credential list --identity-name $IDENTITY_NAME --resource-group $MY_RESOURCE_GROUP_NAME --query "[?name=='flux-source-controller']"
+
+kubectl rollout restart deployment/source-controller -n flux-system
+kubectl rollout status deployment/source-controller -n flux-system
+
 # force a reconciliation of the HelmRepository
 kubectl annotate gitrepository cluster-config -n cluster-config --overwrite reconcile.fluxcd.io/requestedAt="$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ssZ')"
 
@@ -85,3 +94,40 @@ kubectl get helmrelease redis -n cluster-config
 # Verify workload identity configuration
 kubectl describe serviceaccount source-controller -n flux-system
 kubectl get helmrepository acr-oci -n cluster-config -o yaml
+
+kubectl logs -n flux-system -l app=source-controller --tail=20
+
+kubectl annotate serviceaccount -n flux-system source-controller azure.workload.identity/client-id="$IDENTITY_CLIENT_ID" --overwrite
+
+# Add label to the flux-system namespace to enable workload identity
+kubectl label namespace flux-system azure.workload.identity/use=true
+
+kubectl exec -n default -it workload-identity-test -c oidc -- /bin/bash
+
+###################################
+# Get the login server of the ACR #
+###################################
+$ACR_LOGIN_SERVER=$(az acr show -n $ACR_NAME -g $MY_RESOURCE_GROUP_NAME --query "loginServer" -o tsv)
+# namespace used by your HelmRepository in attachment is cluster-config
+$ns = "cluster-config"
+$secretName = "acr-credentials"
+$clientId = "ed20f3b1-51d6-47f8-840d-c609ab4c8c71"
+$clientSecret = "kdc8Q~lzKOrEwog-JE6f-K.keqwdW-SuTI0hybFZ"
+
+kubectl create secret docker-registry $secretName `
+  --docker-server=$ACR_LOGIN_SERVER `
+  --docker-username=$clientId `
+  --docker-password=$clientSecret `
+  -n $ns
+
+
+
+
+###################################
+# Test ingress #
+###################################
+kubectl run test-pod --rm -i --tty --restart=Never --image=curlimages/curl -- curl -v http://podinfo.podinfo:9898/
+
+kubectl run test-ingress --rm -i --tty --restart=Never --image=curlimages/curl -- curl -v -H "Host: podinfo.staging" http://135.116.251.205/
+
+kubectl port-forward -n podinfo svc/podinfo 8080:9898
